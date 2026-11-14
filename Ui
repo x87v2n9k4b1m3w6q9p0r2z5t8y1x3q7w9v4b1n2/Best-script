@@ -15,11 +15,6 @@ local v10 = cloneref(game:GetService("Stats"))
 local v11 = cloneref(game:GetService("TextService"))
 local LocalPlayer = v2.LocalPlayer
 local Y = v7:GetGuiInset().Y
-
--- CORREÇÃO MOBILE: Força o Roblox a reconhecer Touch e libera o joystick
-v3.TouchEnabled = true
-v3.MouseEnabled = false
-
 local v14 = v3.TouchEnabled and not v3.MouseEnabled
 local lib
 
@@ -3995,70 +3990,15 @@ evenesce.Window = function(p284, p285)
 	items.SettingsButton = v511
 	items.SettingsHit = v512
 
-	-- BOTÃO MINIMIZAR PERSONALIZADO ADICIONADO AQUI
 	if v14 then
-		local screenGui = Instance.new("ScreenGui")
-		screenGui.Name = "YanHubButton"
-		screenGui.ResetOnSpawn = false
-		screenGui.IgnoreGuiInset = true
-		screenGui.DisplayOrder = 999999
-		screenGui.Parent = gethui()
+		items.SettingsButton.Instance.Position = UDim2.fromOffset(evenesce.WindowWidth - 90, 15)
 
-		local minBtn = Instance.new("TextButton")
-		minBtn.Size = UDim2.new(0, 55, 0, 55)
-		minBtn.Position = UDim2.new(0, 15, 0.5, -27)
-		minBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-		minBtn.BackgroundTransparency = 0.2
-		minBtn.BorderSizePixel = 0
-		minBtn.Text = ""
-		minBtn.ZIndex = 999
-		minBtn.AutoButtonColor = false
-		minBtn.Parent = screenGui
+		local v513, v514 = v507(evenesce.WindowWidth - 50, "10747384394")
 
-		local btnCorner = Instance.new("UICorner")
-		btnCorner.CornerRadius = UDim.new(1, 0)
-		btnCorner.Parent = minBtn
-
-		local stroke = Instance.new("UIStroke")
-		stroke.Color = Color3.fromRGB(138, 134, 255)
-		stroke.Thickness = 2
-		stroke.Parent = minBtn
-
-		local icon = Instance.new("ImageLabel")
-		icon.Size = UDim2.new(1, 0, 1, 0)
-		icon.Position = UDim2.new(0, 0, 0, 0)
-		icon.BackgroundTransparency = 1
-		icon.Image = "rbxassetid://138941730404060"
-		icon.ScaleType = Enum.ScaleType.Crop
-		icon.Parent = minBtn
-
-		local iconCorner = Instance.new("UICorner")
-		iconCorner.CornerRadius = UDim.new(1, 0)
-		iconCorner.Parent = icon
-
-		local dragging, dragInput, dragStart, startPos
-		minBtn.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				dragging = true
-				dragStart = input.Position
-				startPos = minBtn.Position
-				input.Changed:Connect(function()
-					if input.UserInputState == Enum.UserInputState.End then dragging = false end
-				end)
-			end
-		end)
-		minBtn.InputChanged:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end
-		end)
-		v3.InputChanged:Connect(function(input)
-			if input == dragInput and dragging then
-				local delta = input.Position - dragStart
-				minBtn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-			end
-		end)
-
-		minBtn.MouseButton1Click:Connect(function()
-			window:SetOpen(not window.IsOpen)
+		items.CloseButton = v513
+		items.CloseHit = v514
+		items.CloseHit:Connect("MouseButton1Down", function()
+			window:SetOpen(false)
 		end)
 	end
 
@@ -4222,6 +4162,51 @@ evenesce.Window = function(p284, p285)
 			window:SetOpen(not window.IsOpen)
 		end
 	end)
+
+	if v14 then
+		local function v521()
+			local v522 = workspace.CurrentCamera.ViewportSize / evenesce:GetScreenScale()
+			local v523 = math.clamp(v522.X * 0.62 - 22, 0, v522.X - 44)
+			local v524 = math.clamp(v522.Y * 0.46 - 22, 0, v522.Y - 44)
+
+			return UDim2.fromOffset(v523, v524)
+		end
+
+		local v525 = evenesce:Create("ImageButton", {
+			Parent = evenesce.Holder.Instance,
+			Name = "\0",
+			AutoButtonColor = false,
+			Position = v521(),
+			Size = UDim2.fromOffset(44, 44),
+			ZIndex = 95,
+			BorderSizePixel = 0,
+			BackgroundColor3 = evenesce.Theme.Background
+		}):AddToTheme({
+			BackgroundColor3 = "Background"
+		})
+
+		v139(v525)
+		evenesce:Create("UIStroke", {
+			Parent = v525.Instance,
+			Color = evenesce.Theme.Line,
+			Thickness = 1
+		}):AddToTheme({
+			Color = "Line"
+		})
+		v145({
+			Parent = v525.Instance,
+			Icon = "menu",
+			Anchor = Vector2.new(0.5, 0.5),
+			Pos = UDim2.new(0.5, 0, 0.5, 0),
+			Size = UDim2.fromOffset(18, 18),
+			Color = "Accent",
+			Z = 96
+		})
+		v525:Connect("MouseButton1Click", function()
+			window:SetOpen(not window.IsOpen)
+		end)
+		evenesce:MakeDraggable(v525.Instance)
+	end
 
 	local v526 = v140({
 		Parent = evenesce.UnusedHolder.Instance,
